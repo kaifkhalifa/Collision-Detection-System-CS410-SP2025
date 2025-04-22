@@ -17,7 +17,7 @@ Description: Contains functions use to read sensor data
  * @return void
  * @note This function should be called before attempting to connect to the WiFi network.
  */
-void ConnectWiFi(const char* ssid, const char* password);
+//void ConnectWiFi(const char* ssid, const char* password);
 
 /**
  * @brief Continuously check the WiFi connection status and reconnect if necessary

@@ -1,9 +1,11 @@
+
 /*
 =============================
 Filename: SensorOutput.cpp
 Author: Gustavo Aguiar
 Description: Contains functions use to read sensor data
 */
+
 #include "SensorOutput.h"
 
 void ConnectWiFi(const char* ssid, const char* password) {
