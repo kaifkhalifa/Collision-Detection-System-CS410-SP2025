@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collision Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="signup-container">
+            <h1>Collision Detection System</h1>
+            <p class="subtitle">Register your device for real-time collision detection alerts!</p>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deviceId">Device ID</label>
+                    <input type="text" id="deviceId" name="deviceId" required>
+                </div>
+
+                <!-- ✅ Opt-In Consent Checkbox -->
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="optin" name="optin" required>
+                        I agree to receive SMS alerts related to my device activity (you can opt-out at any time by replying STOP).
+                    </label>
+                </div>
+
+                <!-- ✅ Privacy Policy Link -->
+                <p>
+                    By signing up, you confirm that you have read and agree to our 
+                    <a href="privacy-policy.html" target="_blank">Privacy Policy</a>.
+                </p>
+
+                <button type="submit" class="submit-btn">Sign Up for Alerts</button>
+            </form>
+
+            <!-- ✅ Confirmation Message -->
+            <p class="optin-message">
+                After submitting the form, you will receive a confirmation SMS indicating that you will receive device-related alerts.
+            </p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
