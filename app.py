@@ -11,7 +11,16 @@ from threading import Thread
 import receive_mqtt_data
 
 def run_mqtt():
-   receive_mqtt_data.run()
+   try:
+        receive_mqtt_data.run()
+   except Exception as e:
+        print(f"MQTT thread crashed: {e}")
+   
+def start_mqtt():
+    mqtt_thread = Thread(target=run_mqtt, daemon=True)
+    mqtt_thread.start()
+
+start_mqtt()
 
 app = Flask(__name__)
 
@@ -66,8 +75,5 @@ def signup():
     
     return jsonify({"message": "Signup successful!"}), 200  # returning a success message    
 if __name__ == '__main__':
-    mqtt_thread = Thread(target=run_mqtt)
-    mqtt_thread.daemon = True  # Exit when the main program ends
-    mqtt_thread.start()
 
     app.run(debug=True, use_reloader=False) 
