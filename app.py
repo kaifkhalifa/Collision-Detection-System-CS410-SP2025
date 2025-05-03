@@ -7,7 +7,11 @@ from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+from threading import Thread
+import receive_mqtt_data
 
+def run_mqtt():
+   receive_mqtt_data.run()
 
 app = Flask(__name__)
 
@@ -62,4 +66,8 @@ def signup():
     
     return jsonify({"message": "Signup successful!"}), 200  # returning a success message    
 if __name__ == '__main__':
-    app.run(debug=True)
+    mqtt_thread = Thread(target=run_mqtt)
+    mqtt_thread.daemon = True  # Exit when the main program ends
+    mqtt_thread.start()
+
+    app.run(debug=True, use_reloader=False) 

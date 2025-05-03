@@ -7,6 +7,10 @@ from twilio.rest import Client
 from dotenv import load_dotenv
 from random import uniform
 from cryptography.fernet import Fernet
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def initialize():
     # loading the environment variables
@@ -35,9 +39,9 @@ def send_sms(client,body, from_number, to_number):
             from_= from_number,
             to=to_number
         )
-        print(f"Message sent! SID: {message.sid}")
+        logger.info(f"Message sent! SID: {message.sid}")
     except Exception as e:
-        print(f"Failed to send SMS: {e}")
+        logger.info(f"Failed to send SMS: {e}")
         
 def get_phonenumber(device_id):
     filename = 'data.csv'
@@ -48,18 +52,18 @@ def get_phonenumber(device_id):
                 if row['device_id'] == device_id:
                     return row['phonenumber']
     except FileNotFoundError:
-        print("csv file not found")
+        logger.error("csv file not found")
     except Exception as e:
-        print(f'error reading csv: {e}')
+        logger.error(f'error reading csv: {e}')
         
     return None
 
 def on_connect(client, userdata, flags, rc, properties):
     if rc == 0:  # 0 means successful connection
-        print("Successfully connected to the broker")
+        logger.info("Successfully connected to the broker")
         client.subscribe(topic)
     else:
-        print(f"Connection failed with code {rc}")
+        logger.error(f"Connection failed with code {rc}")
 
 def on_message(client, userdata, msg):
     
@@ -82,11 +86,11 @@ def on_message(client, userdata, msg):
         
         # send the message to the user based on if collisionc = true or false
         if isCollision == 'true':
-            print("sending collision text")
+            logger.info("sending collision text")
         else:
-            print("sending warning text")
+            logger.info("sending warning text")
     except json.JSONDecodeError:
-        print(f"Failed to decode the JSON")
+        logger.error(f"Failed to decode the JSON")
 
     
 
@@ -94,7 +98,7 @@ def on_message(client, userdata, msg):
 
 def run():
     
-    """ cipher, twilioClient, testPhoneNumber = initialize()
+    cipher, twilioClient, testPhoneNumber = initialize()
     
     client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
     client.username_pw_set(username="cdsproject", password="hP8yIYhAryhXULuI")
@@ -104,14 +108,15 @@ def run():
     client.on_message = on_message
     client.connect(mqttBroker, 1883, 60)
     client.loop_start()
- 
+    logger.info("MQTT client started")
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("Stopping subscriber.")
+        logger.info("Stopping subscriber.")
         client.loop_stop()
- """
+    except Exception as e:
+        logger.error(f"Error while running the MQTT client: {e}")
     
 if __name__ == '__main__':
     cipher, twilioClient, testPhoneNumber = initialize()
