@@ -24,7 +24,7 @@ try:
     while True:
         # Create the message payload with random values
         payload = {
-            "device": "ESP32_TEST",
+            "device_id": "DEMOESP",
             "timestamp": time.time(),
             "collision": True,
             "severity": uniform(20.0, 21.5),

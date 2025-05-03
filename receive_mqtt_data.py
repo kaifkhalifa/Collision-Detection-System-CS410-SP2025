@@ -49,7 +49,7 @@ def get_phonenumber(device_id):
         with open(filename, mode='r') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                if row['device_id'] == device_id:
+                if row['device_id'].strip().lower() == device_id.strip().lower():
                     return row['phonenumber']
     except FileNotFoundError:
         logger.error("csv file not found")
@@ -81,7 +81,20 @@ def on_message(client, userdata, msg):
         distanceFromObject = data.get("distanc_cm")
         
         encryptedPhoneNumber = get_phonenumber(deviceId)
-        phoneNumber = cipher.decrypt(encryptedPhoneNumber)
+
+        if encryptedPhoneNumber is None:
+            logging.error(f"No encrypted phone number found for device ID: {deviceId}")
+            return
+
+        try:
+            # Convert to bytes
+            encryptedPhoneNumber = encryptedPhoneNumber.encode('utf-8')
+
+            # Decrypt the phone number
+            phoneNumber = cipher.decrypt(encryptedPhoneNumber).decode('utf-8')
+        except Exception as e:
+            logging.exception("Failed to decrypt phone number")
+            return
         
         
         # send the message to the user based on if collisionc = true or false
