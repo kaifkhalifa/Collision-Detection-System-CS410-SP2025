@@ -3,7 +3,8 @@ import os
 import json
 import csv
 import time
-from twilio.rest import Client
+import smtplib
+from email.message import EmailMessage
 from dotenv import load_dotenv
 from random import uniform
 from cryptography.fernet import Fernet
@@ -12,37 +13,41 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def initialize():
     # loading the environment variables
     load_dotenv("env.env")
 
-    # loading the encryption key and creating the Fernet object 
+    # loading the encryption key and creating the Fernet object
     key = os.getenv("FERNET_KEY").encode()
     cipher = Fernet(key)
 
-    # loading the twilio number, account ssid, and auth key to send text message alerts
-    authKey = os.getenv("TWILIO_TEST_AUTH_TOKEN")
-    accountSSID = os.getenv("TWILIO_TEST_SSID")
-    testPhoneNumber = os.getenv("TWILIO_PHONENUMBER")
+    send_email = 'hankins.emry@gmail.com'
+    email_app_password = 'mzio ppcz ccgo gshe'
+    # to_number = '2026795229@txt.att.net'
 
-    # creating the twilio object responsible for sending text alerts!
-    twilioClient = Client(accountSSID, authKey)
-    return cipher, twilioClient, testPhoneNumber 
+    # returning the cipher object and the email to send the message to
+    return cipher, send_email, email_app_password
+
 
 topic = "collision_data"
 mqttBroker = "cdsproject.cloud.shiftr.io"
 
-def send_sms(client,body, from_number, to_number):
-    try:
-        message = client.messages.create(
-            body=body,
-            from_= from_number,
-            to=to_number
-        )
-        logger.info(f"Message sent! SID: {message.sid}")
-    except Exception as e:
-        logger.info(f"Failed to send SMS: {e}")
-        
+
+def send_sms_via_email(subject, body, send_email, to_number, email_app_password):
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['Subject'] = subject
+    msg['From'] = send_email
+    msg['To'] = to_number
+
+    # Use Gmail's SMTP server (or update if using another email provider)
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(send_email, email_app_password)
+        smtp.send_message(msg)
+        logging.info("Message sent!")
+
+
 def get_phonenumber(device_id):
     filename = 'data.csv'
     try:
@@ -55,20 +60,22 @@ def get_phonenumber(device_id):
         logger.error("csv file not found")
     except Exception as e:
         logger.error(f'error reading csv: {e}')
-        
+
     return None
+
 
 def on_connect(client, userdata, flags, rc, properties):
     if rc == 0:  # 0 means successful connection
         logger.info("Successfully connected to the broker")
         client.subscribe(topic)
+        logger.info(f"Subscribed to topic: {topic}")
     else:
         logger.error(f"Connection failed with code {rc}")
 
+
 def on_message(client, userdata, msg):
-    
-    cipher, twilioClient, testPhoneNumber = userdata
-    
+    logger.info(f"Received message: {msg.payload.decode()}")
+    cipher, send_email, email_app_password = userdata
     payload = msg.payload.decode()
     print(f"Received JSON: {payload}")
     try:
@@ -78,12 +85,13 @@ def on_message(client, userdata, msg):
         isCollision = data.get("collision")
         severityMessage = data.get("severity")
         pressureData = data.get("pressure")
-        distanceFromObject = data.get("distanc_cm")
-        
+        distanceFromObject = data.get("distance_cm")
+
         encryptedPhoneNumber = get_phonenumber(deviceId)
 
         if encryptedPhoneNumber is None:
-            logging.error(f"No encrypted phone number found for device ID: {deviceId}")
+            logging.error(
+                f"No encrypted phone number found for device ID: {deviceId}")
             return
 
         try:
@@ -95,28 +103,38 @@ def on_message(client, userdata, msg):
         except Exception as e:
             logging.exception("Failed to decrypt phone number")
             return
-        
-        
+
+        sms_email = f"{phoneNumber}@txt.att.net"
+
         # send the message to the user based on if collisionc = true or false
-        if isCollision == 'true':
+        if isCollision:
             logger.info("sending collision text")
+            subject = "Collision Detected"
+            body = (
+                f"Collision detected!\n"
+                f"Severity: {severityMessage}\n"
+                f"at time: {timestamp}"
+            )
         else:
             logger.info("sending warning text")
+            subject = "Warning Alert"
+            body = (
+                f"Warning Near Collision!!\n"
+                f"Distance: {distanceFromObject} cm away\n"
+                f"at time: {timestamp}"
+            )
+        send_sms_via_email(subject, body, send_email,
+                           sms_email, email_app_password)
     except json.JSONDecodeError:
         logger.error(f"Failed to decode the JSON")
 
-    
-
-
 
 def run():
-    
-    cipher, twilioClient, testPhoneNumber = initialize()
-    
+
+    cipher, send_email, email_app_password = initialize()
     client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
     client.username_pw_set(username="cdsproject", password="hP8yIYhAryhXULuI")
-    
-    client.user_data_set((cipher, twilioClient, testPhoneNumber ))
+    client.user_data_set((cipher, send_email, email_app_password))
     client.on_connect = on_connect
     client.on_message = on_message
     client.connect(mqttBroker, 1883, 60)
@@ -130,7 +148,10 @@ def run():
         client.loop_stop()
     except Exception as e:
         logger.error(f"Error while running the MQTT client: {e}")
-    
+
+
 if __name__ == '__main__':
-    cipher, twilioClient, testPhoneNumber = initialize()
+    # cipher, twilioClient, testPhoneNumber = initialize()
+    run()
+
    
