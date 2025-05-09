@@ -49,7 +49,7 @@ Core Features:
 
 # Documentation
 
-Link or post documentation here
+[Link to our Documentation](https://docs.google.com/document/d/1Gpf9F6l65aNqtSdLUW4sN3zz2r2ugYwhTedpowMC90c/edit?tab=t.c7bkemifnjyc)
 
 # Board
 
