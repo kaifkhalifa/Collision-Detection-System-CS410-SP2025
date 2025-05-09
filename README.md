@@ -13,21 +13,39 @@ Feel free to use this to jump around this readme
 
 [Board](#Board)
 
-[Future Potential Improvements](#Future-Potential-Improvements)
-
 [What We Learned](#What-We-Learned)
 
 # Team-Members
 
-List team members
+Kaif Khalifa - Project Manager and Designer
+
+Emry Hankins - Full-Stack and Systems Integration
+
+Fardin Hasan - Backend & MQTT Integration 
+
+Gustavo Aguiar - Embedded Systems and Sensor Integration
 
 # Problem
 
-Describe problem
+Autonomous vehicles operate in unpredictable, crowded environments, surrounded by pedestrians, other vehicles, and fixed obsticles. Even minor collisions can lead to costly repairs if insurance won't cover it or safety hazards. 
+
+The challenge than becomes: How can we detect collisions the moment that they happen? How can we alert the users? How can we prove it?
 
 # Solution
 
-Describe and showcase our solution
+How our solution works:
+
+1. User signs up on the web-based app 
+2. Sensors (Collision, distance, pressure) detect impact and proximity
+3. ESP32 processes sensor data and send it to the MQTT server
+4. Backend sends a mobile alert to the user's cell phone
+
+Core Features:
+
+- Real-time detection
+- Low-latency MQTT communication 
+- Mobile alerts
+- Data logging
 
 # Documentation
 
@@ -35,12 +53,18 @@ Link or post documentation here
 
 # Board
 
-Link to Jira board
-
-# Future-Potential-Improvements
-
-Future potential improvements here
+[Link to our Jira Board](https://umb-team-jmbz7ice.atlassian.net/jira/software/projects/CDSCS/boards/2)
 
 # What-We-Learned
 
-What we learned here
+As a result of working on this project, we learned:
+
+- Integration of multiple sensors into ESP32
+- MQTT Communication
+- Mobile latency and mobile sync issues
+- Cross-functional collaboration
+- - Good communication
+- - Weekly meetings
+- - Open collaboration
+- Debugged complex systems under pressure
+- Build a scalable and real-world applicable solution
