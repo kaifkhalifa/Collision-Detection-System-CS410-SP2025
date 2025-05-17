@@ -1,0 +1,10 @@
+User Manual
+To get started is simple:
+
+1. Sign into our website using your name, phone number, and the device’s ID: https://collision-detection-system-cs410-sp2025.onrender.com/signup 
+
+2. Check the box that says you agree to receive SMS alerts if and when your car is involved in a collision
+
+3. Start driving
+
+You’ll receive regular alerts any time you or your car was involved in an accident. You don't even need to visit the site anymore since it is only a sign up sheet. 
