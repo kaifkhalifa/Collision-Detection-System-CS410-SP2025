@@ -1,0 +1,67 @@
+
+Collision Detection System – Code Manual
+========================================
+
+Overview
+--------
+This system is designed to detect potential and real-time vehicle collisions using sensor data,
+communicate these events over MQTT, and send text alerts to registered users. The architecture includes 
+an embedded system, an MQTT broker, and a backend server.
+
+Embedded System Structure
+-------------------------
+The embedded system is composed of several modules that process and read sensor data, 
+evaluate conditions, and publish alerts.
+
+1. SensorOutput Module (`SensorOutput.h` / `SensorOutput.cpp`)
+   - Interfaces with physical sensors.
+   - Gathers real-time data from:
+     * Distance sensors 
+     * Pressure sensors
+     * collision sensor
+
+2. Sensor Functions Module (`SensorFunctions.h` / `SensorFunctions.cpp`)
+   - Processes raw data received from the SensorOutput module.
+
+3. Collision Detection Algorithm
+   - Logic is as follows:
+     * Step 1: If object is within the danger threshold → proceed to collision check.
+     * Step 2: If no collision is detected → send a warning alert.
+     * Step 3: If a collision is detected → send a collision alert.
+   - Alerts are formatted as JSON payloads and sent to the MQTT broker using the `MqttComm` class.
+
+Communication: MQTT
+-------------------
+- MQTT is used as the messaging protocol for low-latencycommunication.
+- The embedded system connects to a public broker (`cdsproject.cloud.shiftr.io`) and publishes to 
+  the topic: `collision_data`.
+
+Backend Server
+--------------
+The backend is a continuously running server that performs the following:
+
+1. MQTT Listener (`receive_mqtt_data.py`)
+   - Subscribes to the topic `collision_data` on the MQTT broker.
+   - On receiving a message:
+     * parses the JSON.
+     * Extracts the device_id, timestamp, severity, and other context.
+
+2. Phone Number Lookup and Decryption
+   - Searches for the device ID in `data.csv`.
+   - Phone numbers are stored encrypted using Fernet encryption.
+   - Decrypts the phone number upon lookup.
+
+3. SMS Notification
+   - Constructs the appropriate alert message based on the alert type.
+   - Sends SMS via email-to-SMS gateway using `smtplib` and Gmail's SMTP server.
+
+Signup System
+-------------
+- Users can register their:
+  * First and last name
+  * Device ID
+  * Phone number (encrypted before storage)
+- Data is stored in a CSV file (`data.csv`).
+- Backend uses `.env` file to load encryption keys and credentials.
+
+
