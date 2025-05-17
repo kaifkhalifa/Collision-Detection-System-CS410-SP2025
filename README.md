@@ -13,6 +13,8 @@ Feel free to use this to jump around this readme
 
 [Code](#Code)
 
+[Website](#Website)
+
 [Board](#Board)
 
 [What We Learned](#What-We-Learned)
@@ -60,6 +62,10 @@ Core Features:
 [Here is the hardware and send warning code](https://github.com/kaifkhalifa/Collision-Detection-System-CS410-SP2025/tree/CDSCS-Hardware-and-Algorithm)
 
 [Here is the Render hosting code](https://github.com/kaifkhalifa/Collision-Detection-System-CS410-SP2025/tree/render-hosting)
+
+# Website
+
+Clicking on [this link](https://collision-detection-system-cs410-sp2025.onrender.com/signup) will send you to the website you sign up for to start recieving the messages.
 
 # Board
 
