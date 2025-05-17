@@ -8,3 +8,99 @@ To get started is simple:
 3. Start driving
 
 You’ll receive regular alerts any time you or your car was involved in an accident. You don't even need to visit the site anymore since it is only a sign up sheet. 
+
+For Engineers and Developers: Setting Up the Embedded System
+This section walks through the steps to build, deploy, and run the collision detection firmware on the ESP32 microcontroller using Arduino IDE or PlatformIO.
+
+1. Hardware Components
+ESP32 board
+
+Ultrasonic distance sensor
+
+Thin-film Pressure Sensor
+
+Collision Sensor 
+
+Breadboard, jumper wires, USB cable
+
+2. Software Requirements
+Choose one of the following platforms:
+
+Option A: Arduino IDE
+Download and install Arduino IDE
+
+Add ESP32 board support:
+
+Go to Preferences > Add this URL to Additional Board Manager URLs:
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+
+Open Tools > Board > Boards Manager, then search for ESP32 and click Install
+
+Install required libraries:
+
+WiFi.h
+
+PubSubClient.h (for MQTT communication)
+
+ArduinoJson.h
+Option B: PlatformIO (VSCode Extension)
+Install VSCode
+
+Install the PlatformIO extension
+
+Create a new PlatformIO project:
+
+Board: esp32dev
+
+Framework: arduino
+
+Add the libraries discussed above to platformio.ini:
+
+3. Flashing the Code to ESP32
+Connect your ESP32 via USB
+
+Open the Arduino IDE or PlatformIO
+
+Load the main firmware sketch (collision_alert.ino or main.cpp)
+
+Update WiFi and MQTT credentials in the code within the MQTT Object:
+
+    const char* ssid = "YOUR_WIFI_NAME";
+    const char* password = "YOUR_WIFI_PASSWORD";
+    const char* mqtt_server = "your-broker-url.com";
+also if you broker requires it, add the client name and password.
+Click Upload (in Arduino IDE) or Build → Upload (in PlatformIO)
+
+4. Backend Information
+The backend server is constantly running on Render, so no setup is required for end users or for normal operation of the system.
+
+All incoming data from ESP32 devices is processed automatically, and SMS alerts are dispatched without any manual intervention.
+    
+    Redeploying the Backend
+    If you make updates to the backend code:
+    
+    Push your changes to GitHub (make sure it’s the connected repository).
+    
+    Log into your Render dashboard.
+    
+    Navigate to the backend service.
+    
+    Click Manual Deploy → Deploy latest commit.
+
+This will redeploy the backend with your latest updates.
+
+6. Troubleshooting
+No alerts?
+
+    Make sure the ESP32 is connected to WiFi
+    
+    Ensure MQTT broker URL is reachable
+    
+    Check the wiring of your sensors
+  
+Device not appearing in database?
+
+    Double-check that the Device ID used in the firmware matches the one registered on the site.
+
+
+
