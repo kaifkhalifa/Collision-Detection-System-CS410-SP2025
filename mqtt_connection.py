@@ -1,3 +1,5 @@
+#CODE FOR TESTING RECEIVING DATA FROM THE MQTT BROKER 
+
 import paho.mqtt.client as mqtt
 import json
 import time
