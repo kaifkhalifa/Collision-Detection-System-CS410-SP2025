@@ -1,3 +1,9 @@
+## @file receive_mqtt_data.py
+#  @brief MQTT subscriber for handling incoming collision data and sending SMS alerts.
+#  @details This script connects to an MQTT broker, listens for collision-related messages, decrypts phone numbers from a CSV,
+#  and sends SMS alerts via email using Gmail SMTP. Encryption uses Fernet.
+
+
 import paho.mqtt.client as mqtt
 import os
 import json
@@ -13,6 +19,14 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+ '''
+    @brief Initializes the environment and encryption key.
+
+    @details Loads environment variables from a file,
+             reads the Fernet encryption key, and sets up email credentials.
+
+    @return Tuple containing the Fernet cipher object, sender email, and email app password.
+    '''
 
 def initialize():
     # loading the environment variables
@@ -33,7 +47,15 @@ def initialize():
 topic = "collision_data"
 mqttBroker = "cdsproject.cloud.shiftr.io"
 
+ '''
+    @brief Sends an SMS via email-to-text gateway.
 
+    @param subject The subject of the email.
+    @param body The body content of the message.
+    @param send_email The sender's email address.
+    @param to_number The recipient's phone number in email-to-SMS format.
+    @param email_app_password The sender email's app-specific password.
+    '''
 def send_sms_via_email(subject, body, send_email, to_number, email_app_password):
     msg = EmailMessage()
     msg.set_content(body)
@@ -47,7 +69,13 @@ def send_sms_via_email(subject, body, send_email, to_number, email_app_password)
         smtp.send_message(msg)
         logging.info("Message sent!")
 
+ '''
+    @brief Retrieves the encrypted phone number associated with a device ID.
 
+    @param device_id The device ID to look up.
+
+    @return The encrypted phone number string, or None if not found.
+    '''
 def get_phonenumber(device_id):
     filename = 'data.csv'
     try:
@@ -63,7 +91,15 @@ def get_phonenumber(device_id):
 
     return None
 
+ '''
+    @brief Callback for when the MQTT client connects to the broker.
 
+    @param client The MQTT client instance.
+    @param userdata User-defined data of any type.
+    @param flags Response flags sent by the broker.
+    @param rc The connection result.
+    @param properties MQTT v5 properties.
+    '''
 def on_connect(client, userdata, flags, rc, properties):
     if rc == 0:  # 0 means successful connection
         logger.info("Successfully connected to the broker")
@@ -72,7 +108,13 @@ def on_connect(client, userdata, flags, rc, properties):
     else:
         logger.error(f"Connection failed with code {rc}")
 
+'''
+    @brief Callback for when a message is received from the broker.
 
+    @param client The MQTT client instance.
+    @param userdata User-defined data (cipher, email, app password).
+    @param msg The received message object.
+    '''
 def on_message(client, userdata, msg):
     logger.info(f"Received message: {msg.payload.decode()}")
     cipher, send_email, email_app_password = userdata
@@ -128,6 +170,13 @@ def on_message(client, userdata, msg):
     except json.JSONDecodeError:
         logger.error(f"Failed to decode the JSON")
 
+
+'''
+    @brief Main function to initialize the system and start the MQTT client loop.
+
+    @details Connects to the MQTT broker and listens for messages indefinitely,
+             sending alerts when a collision or near-collision is detected.
+    '''
 
 def run():
 
