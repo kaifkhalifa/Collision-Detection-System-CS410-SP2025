@@ -1,4 +1,9 @@
-"""app.py: Entry point for the Flask web application handling signups."""
+"""@file app.py
+@brief Entry point for the Flask web application handling signups.
+
+This application allows users to register their device and phone number to receive SMS alerts in case of a collision.
+It also starts a background MQTT listener thread to receive messages from ESP32 devices.
+"""
 
 import os 
 import csv
@@ -11,12 +16,22 @@ from threading import Thread
 import receive_mqtt_data
 
 def run_mqtt():
+     """
+    @brief Runs the MQTT listener function from the receive_mqtt_data module in a try-except block.
+    
+    This function is intended to run in a background thread to handle MQTT messages asynchronously.
+    """
    try:
         receive_mqtt_data.run()
    except Exception as e:
         print(f"MQTT thread crashed: {e}")
    
 def start_mqtt():
+   """
+    @brief Starts the MQTT listener thread as a daemon.
+    
+    This ensures that MQTT messages can be received without blocking the main Flask application.
+    """
     mqtt_thread = Thread(target=run_mqtt, daemon=True)
     mqtt_thread.start()
 
@@ -36,7 +51,14 @@ FILENAME = 'data.csv'
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    """
+    @brief Handles user signup via a form (GET) or API call (POST).
     
+    GET: Returns the HTML signup form.
+    POST: Validates and stores user data in a CSV file with encrypted phone number.
+    
+    @return HTML page for GET, JSON response for POST.
+    """
     if request.method == 'GET':
         return render_template('index.html')
     
@@ -75,5 +97,7 @@ def signup():
     
     return jsonify({"message": "Signup successful!"}), 200  # returning a success message    
 if __name__ == '__main__':
-
+ """
+    @brief Runs the Flask app in debug mode.
+    """
     app.run(debug=True, use_reloader=False) 
