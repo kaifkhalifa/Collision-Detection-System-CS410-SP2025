@@ -1,4 +1,4 @@
-
+# GENERATED THE ENCRYPTION KEY FROM THIS SCRIPT
 
 from cryptography.fernet import Fernet
 
